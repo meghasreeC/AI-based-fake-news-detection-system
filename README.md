@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 README.md
 
 # AI-Based Fake News Detection System
