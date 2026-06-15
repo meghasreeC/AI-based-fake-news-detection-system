@@ -5,8 +5,15 @@ st.set_page_config(
     page_icon="📰"
 )
 
-st.title("📰 Fake News Detection using AI/ML")
-st.write("Enter a news article below and check whether it is Real or Fake.")
+st.title("📰 AI-Based Fake News Detection System")
+
+st.markdown("""
+### Welcome!
+
+This application uses a Deep Learning (LSTM) model to classify news articles as **Real News** or **Fake News**.
+
+📌 Enter a news article below and click **Predict**.
+""")
 
 news_text = st.text_area(
     "Enter News Article",
@@ -23,18 +30,29 @@ lstm_model = load_model("notebooks/best_lstm_model.keras")
 
 with open("notebooks/tokenizer.pkl", "rb") as f:
     tokenizer = pickle.load(f)
-st.write("App loaded successfully")
 
 if st.button("Predict"):
+
+    if not news_text.strip():
+        st.warning("⚠️ Please enter a news article.")
+        st.stop()
 
     seq = tokenizer.texts_to_sequences([news_text])
     padded = pad_sequences(seq, maxlen=200)
 
-    prediction = lstm_model.predict(padded)
+    with st.spinner("Analyzing news article..."):
+        prediction = lstm_model.predict(padded)
 
-    st.write(f"Confidence Score: {prediction[0][0]:.4f}")
+    score = float(prediction[0][0])
 
-    if prediction[0][0] > 0.5:
+    st.subheader("Prediction Result")
+
+    st.write(f"Confidence Score: {score*100:.2f}%")
+
+    if score > 0.5:
         st.success("🟢 Real News")
     else:
         st.error("🔴 Fake News")
+
+st.markdown("---")
+st.caption("Developed by Meghasree | AI-Based Fake News Detection System")
